@@ -3,7 +3,6 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -26,10 +25,11 @@ import { useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { FaSpinner } from "react-icons/fa";
+import {BsFileEarmarkPlus} from "react-icons/bs"
 import { toast } from "./ui/use-toast";
 
 import { formSchema, formSchemaType } from "../../schemas/form";
-import { CreateForm } from "../../actions/form";
+import { CreateForm, GetForms } from "../../actions/form";
 
 const CreateFormButton = () => {
   const form = useForm<formSchemaType>({
@@ -55,7 +55,10 @@ const CreateFormButton = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Build new form</Button>
+        <Button className="group border-primary/20 h-[190px] items-center justify-center flex flex-col hover:border-primary hover-cursor-pointer border-dashed border-2 gap-4 bg-background"> 
+        <BsFileEarmarkPlus className="h-8 w-8 text-muted-foreground group-hover:text-primary" /> 
+        <span className="font-bold text-sm text-muted-foreground group-hover:text-primary">Build new form</span>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

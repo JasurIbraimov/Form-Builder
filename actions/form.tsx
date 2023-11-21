@@ -30,9 +30,8 @@ export async function GetFormStats() {
 
   if (visits > 0) {
     submissionRate = (submissions / visits) * 100;
-    bounceRate = 100 - submissionRate
+    bounceRate = 100 - submissionRate;
   }
-
 
   return {
     visits,
@@ -42,15 +41,14 @@ export async function GetFormStats() {
   };
 }
 
-
-export async function CreateForm({name, description}: formSchemaType) {
-  const validation = formSchema.safeParse({name, description})
-  if(!validation.success) {
-    throw new Error("Form not valid!")
+export async function CreateForm({ name, description }: formSchemaType) {
+  const validation = formSchema.safeParse({ name, description });
+  if (!validation.success) {
+    throw new Error("Form not valid!");
   }
 
-  const user = await currentUser()
-  if(!user) {
+  const user = await currentUser();
+  if (!user) {
     throw new UserNotFoundError();
   }
 
@@ -58,11 +56,27 @@ export async function CreateForm({name, description}: formSchemaType) {
     data: {
       userId: user.id,
       name,
-      description
-    }
-  })
-  if(!form) {
-    throw new Error("Something went wrong!")
+      description,
+    },
+  });
+  if (!form) {
+    throw new Error("Something went wrong!");
   }
-  return form.id
+  return form.id;
+}
+
+export async function GetForms() {
+  const user = await currentUser();
+  if (!user) {
+    throw new UserNotFoundError();
+  }
+
+  return await prisma.form.findMany({
+    where: {
+      userId: user.id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 }
