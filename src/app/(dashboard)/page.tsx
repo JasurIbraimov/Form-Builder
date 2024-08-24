@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { GetFormStats, GetForms } from "../../../actions/form";
+import { GetFormStats, GetForms } from "@/actions/form";
 import { LuView } from "react-icons/lu";
 import { FaWpforms, FaEdit } from "react-icons/fa";
 import { HiCursorClick } from "react-icons/hi";
@@ -59,35 +59,35 @@ function StatsCards({ loading, data }: StatsCardsProps) {
     <div className="w-full pt-8 gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
       <StatsCard
         title="Total visits"
-        icon={<LuView className="text-yellow-600" />}
+        icon={<LuView className="text-lime-600" />}
         helperText="All time form visits"
         value={data?.visits.toLocaleString() || "0"}
         loading={loading}
-        className="shadow-md shadow-yellow-600"
+        className="shadow-md shadow-lime-600"
       />
       <StatsCard
         title="Total submissions"
-        icon={<FaWpforms className="text-orange-600" />}
+        icon={<FaWpforms className="text-green-600" />}
         helperText="All time form submissions"
         value={data?.submissions.toLocaleString() || "0"}
         loading={loading}
-        className="shadow-md shadow-orange-600"
+        className="shadow-md shadow-green-600"
       />
       <StatsCard
         title="Submission rate"
-        icon={<HiCursorClick className="text-rose-600" />}
+        icon={<HiCursorClick className="text-emerald-600" />}
         helperText="Visits that result in form submission"
         value={data?.submissionRate.toLocaleString() + "%" || "0%"}
         loading={loading}
-        className="shadow-md shadow-rose-600"
+        className="shadow-md shadow-emerald-600"
       />
       <StatsCard
         title="Bounce rate"
-        icon={<TbArrowBounce className="text-red-600" />}
+        icon={<TbArrowBounce className="text-teal-600" />}
         helperText="Visits that leaves without interacting"
         value={data?.bounceRate.toLocaleString() + "%" || "0%"}
         loading={loading}
-        className="shadow-md shadow-red-600"
+        className="shadow-md shadow-teal-600"
       />
     </div>
   );
