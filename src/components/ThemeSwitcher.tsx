@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes";
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
-import { DesktopIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import { LuMonitor, LuMoon, LuSunDim } from "react-icons/lu";
 
 function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
@@ -21,13 +21,13 @@ function ThemeSwitcher() {
     <Tabs onValueChange={onThemeChanged} value={theme}>
       <TabsList className="border">
         <TabsTrigger className="p-2" value="light">
-          <SunIcon className="h-[1.2rem] w-[1.2rem]" />
+          <LuSunDim className="h-[1.2rem] w-[1.2rem]" />
         </TabsTrigger>
         <TabsTrigger className="p-2" value="dark">
-          <MoonIcon className="h-[1.2rem] w-[1.2rem] rotate-90 transition-all dark:rotate-0" />
+          <LuMoon className="h-[1.2rem] w-[1.2rem] rotate-90 transition-all dark:rotate-0" />
         </TabsTrigger>
         <TabsTrigger className="p-2" value="system">
-          <DesktopIcon className="h-[1.2rem] w-[1.2rem]" />
+          <LuMonitor className="h-[1.2rem] w-[1.2rem]" />
         </TabsTrigger>
       </TabsList>
     </Tabs>

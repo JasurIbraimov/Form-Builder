@@ -23,7 +23,7 @@
     --destructive-foreground: hsl(60 9.1% 97.8%);
     --border: hsl(20 5.9% 90%);
     --input: hsl(20 5.9% 90%);
-    --ring: hsl(24.6 95% 53.1%);
+    --ring: #10b981;
     --radius: 0.5rem;
   }
  
@@ -46,7 +46,7 @@
     --destructive-foreground: hsl(60 9.1% 97.8%);
     --border: hsl(12 6.5% 15.1%);
     --input: hsl(12 6.5% 15.1%);
-    --ring: hsl(20.5 90.2% 48.2%);
+    --ring: #047857;
   }
 }
 

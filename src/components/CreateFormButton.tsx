@@ -25,11 +25,11 @@ import { useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { FaSpinner } from "react-icons/fa";
-import {BsFileEarmarkPlus} from "react-icons/bs"
+import {LuFilePlus } from "react-icons/lu"
 import { toast } from "./ui/use-toast";
 
-import { formSchema, formSchemaType } from "../schemas/form";
-import { CreateForm, GetForms } from "../actions/form";
+import { formSchema, formSchemaType } from "@/schemas/form";
+import { CreateForm, GetForms } from "@/actions/form";
 import { useRouter } from "next/navigation";
 
 const CreateFormButton = () => {
@@ -59,7 +59,7 @@ const CreateFormButton = () => {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="group border-primary/20 h-[190px] items-center justify-center flex flex-col hover:border-primary hover-cursor-pointer border-dashed border-2 gap-4 bg-background"> 
-        <BsFileEarmarkPlus className="h-8 w-8 text-muted-foreground group-hover:text-primary" /> 
+        <LuFilePlus className="h-8 w-8 text-muted-foreground group-hover:text-primary" /> 
         <span className="font-bold text-sm text-muted-foreground group-hover:text-primary">Build new form</span>
         </Button>
       </DialogTrigger>
