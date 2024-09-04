@@ -14,7 +14,10 @@ import { Button } from "./ui/button";
 import { LuTrash } from "react-icons/lu";
 
 const Designer = () => {
-    const { elements, addElement } = useDesigner();
+    const { elements, addElement, selectedElement, setSelectedElement } =
+        useDesigner();
+    const [isDraggingDesignerElement, setIsDraggingDesignerElement] =
+        useState(false);
 
     const droppable = useDroppable({
         id: "designer-drop-area",
@@ -30,6 +33,8 @@ const Designer = () => {
 
             const isDesignerButtonElement =
                 active.data?.current?.isDesignerButtonElement;
+            const isDesignerElement = active.data?.current?.isDesignerElement;
+
             if (isDesignerButtonElement) {
                 const type = active.data?.current?.type;
                 const newElement = FormElements[type as ElementsType].construct(
@@ -37,13 +42,30 @@ const Designer = () => {
                 );
 
                 addElement(0, newElement);
+            } else if (isDesignerElement) {
+                setIsDraggingDesignerElement(false);
+            }
+        },
+        onDragStart(event) {
+            const { active } = event;
+            const isDesignerElement = active.data?.current?.isDesignerElement;
+            if (isDesignerElement) {
+                setIsDraggingDesignerElement(true);
             }
         },
     });
 
     return (
         <div className="flex w-full h-full">
-            <div className="p-4 w-full">
+            <div
+                className="p-4 w-full"
+                onClick={(event) => {
+                    event.stopPropagation();
+                    if (selectedElement) {
+                        setSelectedElement(null);
+                    }
+                }}
+            >
                 <div
                     ref={droppable.setNodeRef}
                     className={cn(
@@ -56,7 +78,7 @@ const Designer = () => {
                             Drag & Drop here
                         </p>
                     )}
-                    {droppable.isOver && (
+                    {droppable.isOver && elements.length === 0 && (
                         <div className="p-4 w-full">
                             <div className="h-[100px] rounded-md bg-primary opacity-50"></div>
                         </div>
@@ -66,6 +88,9 @@ const Designer = () => {
                         <div className="flex flex-col gap-2 w-full p-4">
                             {elements.map((element) => (
                                 <DesignerElementWrapper
+                                    isDraggingDesignerElement={
+                                        isDraggingDesignerElement
+                                    }
                                     key={element.id}
                                     element={element}
                                 />
@@ -79,9 +104,16 @@ const Designer = () => {
     );
 };
 
-function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
+function DesignerElementWrapper({
+    element,
+    isDraggingDesignerElement,
+}: {
+    element: FormElementInstance;
+    isDraggingDesignerElement?: boolean;
+}) {
     const [mouseIsOver, setMouseIsOver] = useState(false);
-    const { removeElement } = useDesigner();
+    const { removeElement, selectedElement, setSelectedElement } =
+        useDesigner();
     const topHalf = useDroppable({
         id: element.id + "-top",
         data: {
@@ -107,30 +139,36 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
             isDesignerElement: true,
         },
     });
+
+    if (draggable.isDragging) {
+        if (mouseIsOver) {
+            setMouseIsOver(false);
+        }
+        return null;
+    }
+
     const DesignerElement = FormElements[element.type].designerComponent;
     return (
         <div
             {...draggable.listeners}
             ref={draggable.setNodeRef}
             onMouseEnter={() => setMouseIsOver(true)}
+            onClick={(event) => {
+                event.stopPropagation();
+                setSelectedElement(element);
+            }}
             onMouseLeave={() => setMouseIsOver(false)}
             className="relative h-[120px] flex flex-col text-foreground hover:cursor-pointer ring-1 ring-inset ring-accent rounded-md"
         >
             <div
                 ref={topHalf.setNodeRef}
-                className={cn(
-                    "absolute top-0 w-full h-1/2 rounded-t-md",
-                    topHalf.isOver && "bg-green-500"
-                )}
+                className={cn("absolute top-0 w-full h-1/2 rounded-t-md")}
             ></div>
             <div
                 ref={bottomHalf.setNodeRef}
-                className={cn(
-                    "absolute w-full bottom-0 h-1/2 rounded-b-md",
-                    bottomHalf.isOver && "bg-red-500"
-                )}
+                className={cn("absolute w-full bottom-0 h-1/2 rounded-b-md")}
             ></div>
-            {mouseIsOver && (
+            {mouseIsOver && !isDraggingDesignerElement && (
                 <>
                     <div className="absolute right-0 h-full">
                         <Button
@@ -148,6 +186,10 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
                     </div>
                 </>
             )}
+            {topHalf.isOver && (
+                <div className="absolute top-0 w-full rounded-md h-[5px] bg-primary rounded-b-none"></div>
+            )}
+
             <div
                 className={cn(
                     "flex w-full h-[120px] opacity-100 items-center rounded-md bg-accent/40 px-4 py-2 pointer-events-none",
@@ -156,10 +198,11 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
             >
                 <DesignerElement elementInstance={element} />
             </div>
+            {bottomHalf.isOver && (
+                <div className="absolute bottom-0 w-full rounded-md h-[5px] bg-primary rounded-t-none"></div>
+            )}
         </div>
     );
 }
 
 export default Designer;
-
-// 1:46:48
