@@ -42,7 +42,7 @@ const propertiesSchema = z.object({
 export const TextFieldFormElement: FormElement = {
     type,
     designerComponent: DesignerComponent,
-    formComponent: () => <div>Form component</div>,
+    formComponent: FormComponent,
     propertiesComponent: PropertiesComponent,
     designerButtonElement: {
         icon: LuTextCursorInput,
@@ -60,6 +60,55 @@ type CustomInstance = FormElementInstance & {
 };
 
 type propertiesFormSchemaType = z.infer<typeof propertiesSchema>;
+
+function DesignerComponent({
+    elementInstance,
+}: {
+    elementInstance: FormElementInstance;
+}) {
+    const element = elementInstance as CustomInstance;
+    const { label, required, placeholder, helperText } =
+        element.extraAttributes;
+    return (
+        <div className="flex flex-col gap-2 w-full">
+            <Label>
+                {label}
+                {required && "*"}
+            </Label>
+
+            <Input readOnly disabled placeholder={placeholder} />
+            {helperText && (
+                <p className="text-muted-foreground text-[0.8rem]">
+                    {helperText}
+                </p>
+            )}
+        </div>
+    );
+}
+
+function FormComponent({
+    elementInstance,
+}: {
+    elementInstance: FormElementInstance;
+}) {
+    const element = elementInstance as CustomInstance;
+    const { label, required, placeholder, helperText } =
+        element.extraAttributes;
+    return (
+        <div className="flex flex-col gap-2 w-full">
+            <Label>
+                {label}
+                {required && "*"}
+            </Label>
+            <Input placeholder={placeholder} />
+            {helperText && (
+                <p className="text-muted-foreground text-[0.8rem]">
+                    {helperText}
+                </p>
+            )}
+        </div>
+    );
+}
 
 function PropertiesComponent({
     elementInstance,
@@ -183,7 +232,7 @@ function PropertiesComponent({
                             <div className="space-y-0.5 ">
                                 <FormLabel>Required</FormLabel>
                                 <FormDescription>
-                                    Provides requirement of the field 
+                                    Provides requirement of the field
                                 </FormDescription>
                             </div>
                             <FormControl>
@@ -199,30 +248,5 @@ function PropertiesComponent({
                 />
             </form>
         </Form>
-    );
-}
-
-function DesignerComponent({
-    elementInstance,
-}: {
-    elementInstance: FormElementInstance;
-}) {
-    const element = elementInstance as CustomInstance;
-    const { label, required, placeholder, helperText } =
-        element.extraAttributes;
-    return (
-        <div className="flex flex-col gap-2 w-full">
-            <Label>
-                {label}
-                {required && "*"}
-            </Label>
-
-            <Input readOnly disabled placeholder={placeholder} />
-            {helperText && (
-                <p className="text-muted-foreground text-[0.8rem]">
-                    {helperText}
-                </p>
-            )}
-        </div>
     );
 }
