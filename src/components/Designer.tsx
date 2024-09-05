@@ -14,7 +14,7 @@ import { Button } from "./ui/button";
 import { LuTrash } from "react-icons/lu";
 
 const Designer = () => {
-    const { elements, addElement, selectedElement, setSelectedElement } =
+    const { elements, addElement, selectedElement, setSelectedElement, removeElement } =
         useDesigner();
     const [isDraggingDesignerElement, setIsDraggingDesignerElement] =
         useState(false);
@@ -34,16 +34,75 @@ const Designer = () => {
             const isDesignerButtonElement =
                 active.data?.current?.isDesignerButtonElement;
             const isDesignerElement = active.data?.current?.isDesignerElement;
+            const isDroppingOverDesignerDropArea =
+                over?.data?.current?.isDesignerDropArea;
 
-            if (isDesignerButtonElement) {
+            const droppingSidebarBtnOverDesignerDropArea =
+                isDesignerButtonElement && isDroppingOverDesignerDropArea;
+            const overId = over?.data?.current?.elementId;
+
+
+            if (droppingSidebarBtnOverDesignerDropArea) {
                 const type = active.data?.current?.type;
                 const newElement = FormElements[type as ElementsType].construct(
                     idGenerator()
                 );
 
-                addElement(0, newElement);
+                addElement(elements.length, newElement);
             } else if (isDesignerElement) {
                 setIsDraggingDesignerElement(false);
+            }
+
+            const isDroppingOverDesignerElementTopHalf =
+                over.data?.current?.isTopHalfDesignerElement;
+            const isDroppingOverDesignerElementBottomHalf =
+                over.data?.current?.isBottomHalfDesignerElement;
+
+            const isDroppingOverDesignerElement =
+                isDroppingOverDesignerElementTopHalf ||
+                isDroppingOverDesignerElementBottomHalf;
+
+            const droppingSidebarBtnOverDesignerELement =
+                isDesignerButtonElement && isDroppingOverDesignerElement;
+
+            if (droppingSidebarBtnOverDesignerELement) {
+                const type = active.data?.current?.type;
+                const newElement = FormElements[type as ElementsType].construct(
+                    idGenerator()
+                );
+
+
+                const overElementIndex = elements.findIndex(
+                    (el) => el.id === overId
+                );
+
+                if (overElementIndex === -1) {
+                    throw new Error("Element not found");
+                }
+
+                let indexForNewElement = overElementIndex;
+                if (isDroppingOverDesignerElementBottomHalf) {
+                    indexForNewElement = overElementIndex + 1;
+                }
+
+                addElement(indexForNewElement, newElement);
+            }
+
+            const draggingDesignerElementOverAnotherDesignerElement = isDroppingOverDesignerElement && isDraggingDesignerElement;
+            if(draggingDesignerElementOverAnotherDesignerElement) {
+                const activeId = active?.data?.current?.elementId;
+                const activeElementIndex = elements.findIndex(el => el.id === activeId);
+                const overElementIndex = elements.findIndex(el => el.id === overId);
+                if(activeElementIndex === -1 || overElementIndex === -1) throw new Error("Element not found");
+
+                const activeElement = {...elements[activeElementIndex]};
+                removeElement(activeId);
+                let indexForNewElement = overElementIndex;
+                if (isDroppingOverDesignerElementBottomHalf) {
+                    indexForNewElement = overElementIndex + 1;
+                }
+                addElement(indexForNewElement, activeElement);
+
             }
         },
         onDragStart(event) {
@@ -206,3 +265,6 @@ function DesignerElementWrapper({
 }
 
 export default Designer;
+
+
+// Reached form previews
