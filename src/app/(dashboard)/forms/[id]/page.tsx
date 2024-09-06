@@ -24,10 +24,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 const FormDetailsPage = async ({
     params,
-    children,
 }: {
     params: { id: string };
-    children: ReactNode;
 }) => {
     const { id } = params;
     const form = await GetFormById(Number(id));
