@@ -97,12 +97,12 @@ const FormBuilder = ({ form }: { form: Form }) => {
                         <div className="flex justify-between">
                             <Button variant={"link"} asChild>
                                 <Link href={"/"} className="gap-2">
-                                    <LuArrowLeft /> Go back home
+                                    <LuArrowLeft className="mr-2"/> Go back home
                                 </Link>
                             </Button>
                             <Button variant={"link"} asChild>
                                 <Link href={`/forms/${form.id}`} className="gap-2">
-                                    Form details <LuArrowRight/>
+                                    Form details <LuArrowRight className="ml-2"/>
                                 </Link>
                             </Button>
                         </div>

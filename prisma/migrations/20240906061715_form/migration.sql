@@ -24,5 +24,11 @@ CREATE TABLE "FormSubmission" (
     CONSTRAINT "FormSubmission_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Form_sharedUrl_key" ON "Form"("sharedUrl");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Form_name_userId_key" ON "Form"("name", "userId");
+
 -- AddForeignKey
 ALTER TABLE "FormSubmission" ADD CONSTRAINT "FormSubmission_formId_fkey" FOREIGN KEY ("formId") REFERENCES "Form"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

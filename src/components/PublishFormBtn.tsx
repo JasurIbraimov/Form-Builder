@@ -64,11 +64,11 @@ const PublishFormBtn = ({id}: {id: number}) => {
 					<AlertDialogCancel>
 						Cancel
 					</AlertDialogCancel>
-					<AlertDialogAction disabled={loading} onClick={(e) => {
+					<AlertDialogAction className="gap-2" disabled={loading} onClick={(e) => {
 						e.preventDefault();
 						startTransition(publishForm)
 					}}>
-						Proceed{" "}{loading && <FaSpinner className="animate-spin"/>}
+						Proceed{loading && <FaSpinner className="animate-spin"/>}
 					</AlertDialogAction>
 				</AlertDialogFooter>
             </AlertDialogContent>

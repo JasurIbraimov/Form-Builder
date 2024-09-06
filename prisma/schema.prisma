@@ -23,7 +23,7 @@ model Form {
   visits Int @default(0)
   submissions Int @default(0)
 
-  sharedUrl String @default(uuid())
+  sharedUrl String @default(uuid()) @unique
 
   FormSubmissions FormSubmission[]
 
