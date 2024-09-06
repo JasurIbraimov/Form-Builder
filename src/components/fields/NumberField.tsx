@@ -1,6 +1,6 @@
 "use client";
 
-import { LuTextCursorInput } from "react-icons/lu";
+import { Bs123  } from "react-icons/bs";
 import {
     ElementsType,
     FormElement,
@@ -26,14 +26,14 @@ import {
 import { Switch } from "../ui/switch";
 import { cn } from "@/lib/utils";
 
-const type: ElementsType = "TextField";
-const fieldLabel = "Text Field";
+const type: ElementsType = "NumberField";
+const fieldLabel = "Number Field";
 
 const extraAttributes = {
     label: fieldLabel,
     helperText: "Helper text",
     required: false,
-    placeholder: "Value here...",
+    placeholder: "0",
 };
 
 const propertiesSchema = z.object({
@@ -43,13 +43,13 @@ const propertiesSchema = z.object({
     placeholder: z.string().max(50),
 });
 
-export const TextFieldFormElement: FormElement = {
+export const NumberFieldFormElement: FormElement = {
     type,
     designerComponent: DesignerComponent,
     formComponent: FormComponent,
     propertiesComponent: PropertiesComponent,
     designerButtonElement: {
-        icon: LuTextCursorInput,
+        icon: Bs123 ,
         label: fieldLabel,
     },
     construct: (id: string) => ({
@@ -88,7 +88,7 @@ function DesignerComponent({
                 {required && "*"}
             </Label>
 
-            <Input readOnly disabled placeholder={placeholder} />
+            <Input readOnly type="number" disabled placeholder={placeholder} />
             {helperText && (
                 <p className="text-muted-foreground text-[0.8rem]">
                     {helperText}
@@ -129,9 +129,10 @@ function FormComponent({
                 className={cn(error && "border-red-500")}
                 placeholder={placeholder}
                 value={value}
+                type="number"
                 onBlur={(e) => {
                     if (!submitValue) return;
-                    const valid = TextFieldFormElement.validate(
+                    const valid = NumberFieldFormElement.validate(
                         element,
                         e.target.value
                     );

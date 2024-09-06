@@ -18,7 +18,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { formatDistance } from "date-fns";
+import { format, formatDistance } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const FormDetailsPage = async ({
     params,
@@ -125,7 +127,13 @@ async function SubmissionsTable({ id }: { id: number }) {
 
     formElements.forEach(({ id, extraAttributes, type }) => {
         switch (type) {
-            case "TextField": {
+            case "TextField":
+            case "TextareaField":
+            case "DateField":
+            case "SelectField":
+            case "CheckboxField":
+            case "EmailFIeld":
+            case "NumberField": {
                 columns.push({
                     id,
                     label: extraAttributes?.label,
@@ -188,11 +196,24 @@ async function SubmissionsTable({ id }: { id: number }) {
     );
 }
 
-function RowCell({type, value}: {type: string, value: string}) {
-    const node:ReactNode = value; 
-    return <TableCell>
-        {node}
-    </TableCell>
+function RowCell({ type, value }: { type: ElementsType; value: string }) {
+    let node: ReactNode = value;
+
+    switch (type) {
+        case "DateField":
+            if (!value) break;
+            const date = new Date(value);
+            node = (
+                <Badge variant={"outline"}>{format(date, "dd/MM/yyyy")}</Badge>
+            );
+            break;
+        case "CheckboxField":
+            const checked = value === "true"
+            node = <Checkbox checked={checked} disabled/>
+            break;
+    }
+
+    return <TableCell>{node}</TableCell>;
 }
 
 export default FormDetailsPage;

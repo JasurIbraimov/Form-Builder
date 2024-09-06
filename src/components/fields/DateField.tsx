@@ -1,6 +1,6 @@
 "use client";
 
-import { LuTextCursorInput } from "react-icons/lu";
+import { LuCalendar } from "react-icons/lu";
 import {
     ElementsType,
     FormElement,
@@ -25,31 +25,32 @@ import {
 } from "../ui/form";
 import { Switch } from "../ui/switch";
 import { cn } from "@/lib/utils";
-
-const type: ElementsType = "TextField";
-const fieldLabel = "Text Field";
+import { Button } from "../ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { format } from "date-fns";
+import { Calendar } from "../ui/calendar";
+const type: ElementsType = "DateField";
+const fieldLabel = "Date Field";
 
 const extraAttributes = {
     label: fieldLabel,
-    helperText: "Helper text",
+    helperText: "Pick a date",
     required: false,
-    placeholder: "Value here...",
 };
 
 const propertiesSchema = z.object({
     label: z.string().min(2).max(50),
     helperText: z.string().max(200),
     required: z.boolean().default(false),
-    placeholder: z.string().max(50),
 });
 
-export const TextFieldFormElement: FormElement = {
+export const DateFieldFormElement: FormElement = {
     type,
     designerComponent: DesignerComponent,
     formComponent: FormComponent,
     propertiesComponent: PropertiesComponent,
     designerButtonElement: {
-        icon: LuTextCursorInput,
+        icon: LuCalendar,
         label: fieldLabel,
     },
     construct: (id: string) => ({
@@ -79,8 +80,7 @@ function DesignerComponent({
     elementInstance: FormElementInstance;
 }) {
     const element = elementInstance as CustomInstance;
-    const { label, required, placeholder, helperText } =
-        element.extraAttributes;
+    const { label, required, helperText } = element.extraAttributes;
     return (
         <div className="flex flex-col gap-2 w-full">
             <Label>
@@ -88,7 +88,12 @@ function DesignerComponent({
                 {required && "*"}
             </Label>
 
-            <Input readOnly disabled placeholder={placeholder} />
+            <Button
+                variant={"outline"}
+                className="w-full justify-start text-left font-normal"
+            >
+                <LuCalendar className="mr-2 h-4 w-4" /> Pick a date
+            </Button>
             {helperText && (
                 <p className="text-muted-foreground text-[0.8rem]">
                     {helperText}
@@ -102,7 +107,7 @@ function FormComponent({
     elementInstance,
     submitValue,
     isInvalid,
-    defaultValue
+    defaultValue,
 }: {
     elementInstance: FormElementInstance;
     submitValue?: SubmitFunction;
@@ -110,9 +115,10 @@ function FormComponent({
     defaultValue?: string;
 }) {
     const element = elementInstance as CustomInstance;
-    const { label, required, placeholder, helperText } =
-        element.extraAttributes;
-    const [value, setValue] = useState(defaultValue || "");
+    const { label, required, helperText } = element.extraAttributes;
+    const [date, setDate] = useState<Date | undefined>(
+        defaultValue ? new Date(defaultValue) : undefined
+    );
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -125,24 +131,35 @@ function FormComponent({
                 {label}
                 {required && "*"}
             </Label>
-            <Input
-                className={cn(error && "border-red-500")}
-                placeholder={placeholder}
-                value={value}
-                onBlur={(e) => {
-                    if (!submitValue) return;
-                    const valid = TextFieldFormElement.validate(
-                        element,
-                        e.target.value
-                    );
-                    if (valid) {
-                        submitValue(element.id, e.target.value);
-                    } else {
-                        setError(!valid);
-                    }
-                }}
-                onChange={(e) => setValue(e.target.value)}
-            />
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant={"outline"}
+                        className={cn(
+                            "w-full h-full justify-start text-left font-normal",
+                            !date && "text-muted-foreground",
+                            error && "border-red-500"
+                        )}
+                    >
+                        <LuCalendar className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP") : "Pick a date"}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 h-auto" align="start">
+                    <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={(dt) => {
+                            setDate(dt);
+                            if(!submitValue) return;
+                            const value = dt?.toUTCString() || "";
+                            const valid = DateFieldFormElement.validate(element, value);
+                            setError(!valid);
+                            submitValue(element.id, value);
+                        }}
+                    />
+                </PopoverContent>
+            </Popover>
             {helperText && (
                 <p
                     className={cn(
@@ -165,7 +182,7 @@ function PropertiesComponent({
     const { updateElement } = useDesigner();
 
     const element = elementInstance as CustomInstance;
-    const { label, helperText, placeholder, required } =
+    const { label, helperText, required } =
         element.extraAttributes;
     const form = useForm<propertiesFormSchemaType>({
         resolver: zodResolver(propertiesSchema),
@@ -173,7 +190,6 @@ function PropertiesComponent({
         defaultValues: {
             label,
             helperText,
-            placeholder,
             required,
         },
     });
@@ -218,29 +234,6 @@ function PropertiesComponent({
                                 The label on the field
                                 <br />
                                 It will be displayed above the field
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="placeholder"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Placeholder</FormLabel>
-                            <FormControl>
-                                <Input
-                                    onKeyDown={(e) => {
-                                        if (e.key == "Enter") {
-                                            e.currentTarget.blur();
-                                        }
-                                    }}
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                The placeholder on the field
                             </FormDescription>
                             <FormMessage />
                         </FormItem>

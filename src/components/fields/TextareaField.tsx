@@ -1,6 +1,5 @@
 "use client";
 
-import { LuTextCursorInput } from "react-icons/lu";
 import {
     ElementsType,
     FormElement,
@@ -25,15 +24,21 @@ import {
 } from "../ui/form";
 import { Switch } from "../ui/switch";
 import { cn } from "@/lib/utils";
+import { BsTextareaResize } from "react-icons/bs";
+import { Textarea } from "../ui/textarea";
+import { Slider } from "../ui/slider";
 
-const type: ElementsType = "TextField";
-const fieldLabel = "Text Field";
+const type: ElementsType = "TextareaField";
+const fieldLabel = "Text area";
+const MIN_ROWS = 1
+const MAX_ROWS = 10
 
 const extraAttributes = {
     label: fieldLabel,
     helperText: "Helper text",
     required: false,
     placeholder: "Value here...",
+    rows: 3,
 };
 
 const propertiesSchema = z.object({
@@ -41,15 +46,16 @@ const propertiesSchema = z.object({
     helperText: z.string().max(200),
     required: z.boolean().default(false),
     placeholder: z.string().max(50),
+    rows: z.number().min(MIN_ROWS).max(MAX_ROWS),
 });
 
-export const TextFieldFormElement: FormElement = {
+export const TextareaFieldFormElement: FormElement = {
     type,
     designerComponent: DesignerComponent,
     formComponent: FormComponent,
     propertiesComponent: PropertiesComponent,
     designerButtonElement: {
-        icon: LuTextCursorInput,
+        icon: BsTextareaResize,
         label: fieldLabel,
     },
     construct: (id: string) => ({
@@ -88,7 +94,7 @@ function DesignerComponent({
                 {required && "*"}
             </Label>
 
-            <Input readOnly disabled placeholder={placeholder} />
+            <Textarea readOnly disabled placeholder={placeholder} />
             {helperText && (
                 <p className="text-muted-foreground text-[0.8rem]">
                     {helperText}
@@ -102,7 +108,7 @@ function FormComponent({
     elementInstance,
     submitValue,
     isInvalid,
-    defaultValue
+    defaultValue,
 }: {
     elementInstance: FormElementInstance;
     submitValue?: SubmitFunction;
@@ -110,7 +116,7 @@ function FormComponent({
     defaultValue?: string;
 }) {
     const element = elementInstance as CustomInstance;
-    const { label, required, placeholder, helperText } =
+    const { label, required, placeholder, helperText, rows } =
         element.extraAttributes;
     const [value, setValue] = useState(defaultValue || "");
     const [error, setError] = useState(false);
@@ -125,13 +131,14 @@ function FormComponent({
                 {label}
                 {required && "*"}
             </Label>
-            <Input
+            <Textarea
+                rows={rows}
                 className={cn(error && "border-red-500")}
                 placeholder={placeholder}
                 value={value}
                 onBlur={(e) => {
                     if (!submitValue) return;
-                    const valid = TextFieldFormElement.validate(
+                    const valid = TextareaFieldFormElement.validate(
                         element,
                         e.target.value
                     );
@@ -165,7 +172,7 @@ function PropertiesComponent({
     const { updateElement } = useDesigner();
 
     const element = elementInstance as CustomInstance;
-    const { label, helperText, placeholder, required } =
+    const { label, helperText, placeholder, required, rows } =
         element.extraAttributes;
     const form = useForm<propertiesFormSchemaType>({
         resolver: zodResolver(propertiesSchema),
@@ -175,6 +182,7 @@ function PropertiesComponent({
             helperText,
             placeholder,
             required,
+            rows,
         },
     });
 
@@ -289,6 +297,27 @@ function PropertiesComponent({
                                 />
                             </FormControl>
 
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="rows"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Rows {form.watch("rows")}</FormLabel>
+                            <FormControl>
+                                <Slider
+                                    defaultValue={[field.value]}
+                                    min={MIN_ROWS}
+                                    max={MAX_ROWS}
+                                    step={1}
+                                    onValueChange={(value) =>
+                                        field.onChange(value[0])
+                                    }
+                                />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}

@@ -4,7 +4,6 @@ import FormBuilder from "@/components/FormBuilder";
 
 const BuilderPage = async ({
     params,
-    children,
 }: {
     params: { id: string };
     children: ReactNode;

@@ -23,7 +23,7 @@ import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
 import Confetti from "react-confetti";
 
 const FormBuilder = ({ form }: { form: Form }) => {
-    const { setElements } = useDesigner();
+    const { setElements, setSelectedElement } = useDesigner();
     const [isReady, setIsReady] = useState(false);
 
     const mouseSensor = useSensor(MouseSensor, {
@@ -43,10 +43,10 @@ const FormBuilder = ({ form }: { form: Form }) => {
         if (isReady) return;
         const elements = JSON.parse(form.content);
         setElements(elements);
+        setSelectedElement(null);
         const readyTimeout = setTimeout(() => setIsReady(true), 500);
         return () => clearTimeout(readyTimeout);
-    }, [form, setElements, isReady]);
-    
+    }, [form, setElements, isReady, setSelectedElement]);
 
     if (!isReady) {
         return (
@@ -56,14 +56,16 @@ const FormBuilder = ({ form }: { form: Form }) => {
         );
     }
 
-   
-
     const shareUrl = `${window.location.origin}/submit/${form.sharedUrl}`;
 
     if (form.published) {
         return (
             <>
-                <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false}/>
+                <Confetti
+                    width={window.innerWidth}
+                    height={window.innerHeight}
+                    recycle={false}
+                />
                 <div className="flex flex-col items-center justify-center w-full">
                     <div className="max-w-md">
                         <h1 className="text-center text-4xl font-bold text-primary border-b pb-2 mb-10">
@@ -97,12 +99,17 @@ const FormBuilder = ({ form }: { form: Form }) => {
                         <div className="flex justify-between">
                             <Button variant={"link"} asChild>
                                 <Link href={"/"} className="gap-2">
-                                    <LuArrowLeft className="mr-2"/> Go back home
+                                    <LuArrowLeft className="mr-2" /> Go back
+                                    home
                                 </Link>
                             </Button>
                             <Button variant={"link"} asChild>
-                                <Link href={`/forms/${form.id}`} className="gap-2">
-                                    Form details <LuArrowRight className="ml-2"/>
+                                <Link
+                                    href={`/forms/${form.id}`}
+                                    className="gap-2"
+                                >
+                                    Form details{" "}
+                                    <LuArrowRight className="ml-2" />
                                 </Link>
                             </Button>
                         </div>
