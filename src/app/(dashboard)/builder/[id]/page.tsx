@@ -6,7 +6,6 @@ const BuilderPage = async ({
     params,
 }: {
     params: { id: string };
-    children: ReactNode;
 }) => {
     const { id } = params;
     const form = await GetFormById(Number(id));
